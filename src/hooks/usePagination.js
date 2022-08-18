@@ -13,21 +13,25 @@ function usePagination({ currentPage, totalCount, pageSize }) {
    - When the currentPage is higher than the total of pages minus 2 pages before, we will display the first page, then "DOTS", then the last N pages. [1, ... ,totalPages-2,totalPages-1,totalPages]
    - Finally, if the currentPage is between the first and last N pages, we will display the first page, then "DOTS", then the current page, then "DOTS", then the last page. [1, ... ,currentPage-1,currentPage,currentPage+1, ... ,totalPages]    
   */
+
+  const createRange = (start, end) => {
+    return Array(end - start + 1)
+      .fill()
+      .map((_, index) => start + index);
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
   let paginationArray = [];
   if (totalPages <= 3) {
-    for (let i = 1; i <= totalPages; i++) {
-      paginationArray.push(i);
-    }
+    paginationArray = [1, 2, 3];
+    // paginationArray = [...createRange(1, totalPages)];
   } else {
     if (currentPage <= 2) {
-      for (let i = 1; i <= 3; i++) paginationArray.push(i);
-      paginationArray = [...paginationArray, DOTS, totalPages];
+      paginationArray = [1, 2, 3, DOTS, totalPages];
+      //paginationArray = [...createRange(1, 3), DOTS, totalPages];
     } else if (currentPage >= totalPages - 2) {
-      paginationArray.push(1);
-      paginationArray.push(DOTS);
-      for (let i = totalPages - 2; i <= totalPages; i++)
-        paginationArray.push(i);
+      paginationArray = [1, DOTS, currentPage - 1, totalPages];
+      //paginationArray = [1, DOTS, ...createRange(currentPage - 1, totalPages)];
     } else {
       paginationArray = [
         1,
