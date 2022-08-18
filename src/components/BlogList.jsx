@@ -6,23 +6,42 @@ import blogs from "../data/blogs.json";
 const PAGE_SIZES = [15, 25, 50, 100];
 
 function BlogList() {
-  const currentPaginationData = blogs.posts.slice(0, 15);
+  const [blogData] = React.useState({ ...blogs });
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [selectedPageSize, setSelectedPageSize] = React.useState(15);
 
-  const updateRowsPerPage = () => {};
-  const updatePage = () => {};
+  const currentPaginationData = React.useMemo(() => {
+    return blogData.posts.slice(
+      (currentPage - 1) * selectedPageSize,
+      currentPage * selectedPageSize
+    );
+  }, [blogData, currentPage, selectedPageSize]);
+
+  const updateRowsPerPage = (value) => {
+    updatePaginationData(1, +value);
+  };
+  const updatePage = (pageNumber) => {
+    // Avoid to call the function if the page is the same
+    if (currentPage !== pageNumber)
+      updatePaginationData(pageNumber, selectedPageSize);
+  };
+  const updatePaginationData = (pageNumber, pageSize) => {
+    setSelectedPageSize(pageSize);
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div>
       <Pagination
-        currentPage={1}
-        totalCount={blogs.posts.length}
-        pageSize={15}
+        currentPage={currentPage}
+        totalCount={blogData.posts.length}
+        pageSize={selectedPageSize}
         pageSizeOptions={PAGE_SIZES}
         onPageChange={updatePage}
         onPageSizeOptionChange={updateRowsPerPage}
       />
-      <ul
-        // Do not remove the aria-label below, it is used for Hatchways automation.
+
+      <ul // Do not remove the aria-label below, it is used for Hatchways automation.
         aria-label="blog list"
       >
         {currentPaginationData.map((blog) => (
